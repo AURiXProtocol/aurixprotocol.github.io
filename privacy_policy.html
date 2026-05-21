@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AURiX Browser Extensions — Privacy Policy</title>
+  <style>
+    :root {
+      --ink: #111;
+      --soft: #555;
+      --bg: #fdfdfc;
+      --rule: #ddd;
+      --pill-bg: #f4f4f2;
+      --accent: #1f3a5f;
+    }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); }
+    body {
+      font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+    }
+    h1 { font-size: 1.9rem; margin: 0 0 0.25rem; letter-spacing: -0.01em; }
+    h2 { font-size: 1.2rem; margin: 2.25rem 0 0.5rem; border-bottom: 1px solid var(--rule); padding-bottom: 0.25rem; }
+    h3 { font-size: 1.0rem; margin: 1.25rem 0 0.4rem; color: var(--accent); }
+    p, li { color: var(--ink); }
+    .muted { color: var(--soft); }
+    .meta { color: var(--soft); font-size: 0.9rem; margin-bottom: 1.5rem; }
+    .summary {
+      background: var(--pill-bg);
+      border-left: 4px solid var(--accent);
+      padding: 1rem 1.1rem;
+      border-radius: 4px;
+      margin: 1.25rem 0 1.75rem;
+    }
+    .summary strong { color: var(--accent); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.75rem 0 1.5rem;
+      font-size: 0.92rem;
+    }
+    th, td {
+      text-align: left;
+      vertical-align: top;
+      padding: 0.55rem 0.7rem;
+      border-bottom: 1px solid var(--rule);
+    }
+    th { background: var(--pill-bg); font-weight: 600; }
+    tr td:first-child { font-weight: 600; color: var(--accent); white-space: nowrap; }
+    code { background: var(--pill-bg); padding: 0.05rem 0.35rem; border-radius: 3px; font-size: 0.9em; }
+    ul { padding-left: 1.25rem; }
+    li { margin: 0.3rem 0; }
+    footer {
+      margin-top: 3rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--rule);
+      color: var(--soft);
+      font-size: 0.85rem;
+    }
+    .pill {
+      display: inline-block;
+      background: var(--pill-bg);
+      border-radius: 999px;
+      padding: 0.15rem 0.7rem;
+      font-size: 0.8rem;
+      margin-right: 0.35rem;
+      color: var(--accent);
+      border: 1px solid var(--rule);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>AURiX Browser Extensions — Privacy Policy</h1>
+  <div class="meta">
+    Applies to: AURiX Gauge, AURiX Scope, AURiX Trace, AURiX Ledger, AURiX Receipt &middot;
+    Last updated: <strong>2026-05-19</strong>
+  </div>
+
+  <div>
+    <span class="pill">Local</span>
+    <span class="pill">Private</span>
+    <span class="pill">Identity-free</span>
+  </div>
+
+  <div class="summary">
+    <p><strong>Plain-English summary.</strong> The AURiX browser extensions are designed so that <strong>no data ever leaves your device</strong>. They do not create accounts or user profiles. They do not send telemetry, analytics, crash reports, or usage statistics anywhere. They do not share data with any third party. They are not used for advertising. They are not used to train machine-learning models. Everything an AURiX extension observes is held in your own browser&rsquo;s local storage and stays there until you delete it. There is no AURiX server. There is no backend service. There is no &ldquo;cloud sync.&rdquo; If your data leaks, it will not be from us &mdash; because we never had it.</p>
+  </div>
+
+  <h2>1. The LPI Posture</h2>
+  <p>AURiX&rsquo;s privacy model is architectural, not promissory. It is enforced by what the code <em>cannot do</em>, not by what we promise we won&rsquo;t do. The posture has three constraints:</p>
+  <ul>
+    <li><strong>Local.</strong> Everything runs on-device, inside your browser. There is no network layer in any AURiX extension. No API exists to call. No remote endpoint receives AURiX data.</li>
+    <li><strong>Private.</strong> AURiX observes <em>the page</em>, not <em>the user</em>. The extensions do not log what you read, how long you lingered, which words you searched, or what you clicked. All observation is structural (about page behavior), never personal (about user behavior).</li>
+    <li><strong>Identity-free.</strong> No user identity is created, tracked, or required. No account. No login. No device fingerprint. No persistent identifier. No cross-session linkage.</li>
+  </ul>
+
+  <h2>2. Per-Extension Disclosure Matrix</h2>
+  <p>The table below lists, for each AURiX extension, exactly what it reads from the browser, where it stores what it reads, how long it keeps it by default, what happens on export, and what network calls it makes (the last column is <strong>None</strong> in every case &mdash; AURiX extensions make no network calls of any kind).</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Extension</th>
+        <th>What it reads</th>
+        <th>Where it stores</th>
+        <th>Retention default</th>
+        <th>Export behavior</th>
+        <th>Network calls</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Gauge</td>
+        <td>Structural page state: overlays, modal dialogs, scroll-lock, focus traps, cloaked content. DOM properties only; no input or content.</td>
+        <td><code>chrome.storage.local</code> (this extension only)</td>
+        <td>Session-scoped, cleared on browser close or extension reload</td>
+        <td>User-initiated download only; nothing is exported automatically</td>
+        <td>None</td>
+      </tr>
+      <tr>
+        <td>Scope</td>
+        <td>Right-click target URL and link metadata (scheme, tracking parameters). Composes signals from sibling AURiX extensions on the same device.</td>
+        <td><code>chrome.storage.local</code> (this extension only)</td>
+        <td>Session-scoped; popup state cleared when popup closes</td>
+        <td>No export surface; observations are visual only (cursor halo / popup)</td>
+        <td>None</td>
+      </tr>
+      <tr>
+        <td>Trace</td>
+        <td>Web-navigation events for the active tab: page-load timing, redirect chains, sub-frame transitions. URLs are read; page content is not.</td>
+        <td><code>chrome.storage.local</code> (this extension only), bounded ring buffer</td>
+        <td>Ring-buffer overwrites itself; oldest entries dropped at the buffer cap</td>
+        <td>User-initiated copy/download of the visible trace only</td>
+        <td>None</td>
+      </tr>
+      <tr>
+        <td>Ledger</td>
+        <td>DOM mutation events on the active tab (what changed, how often). Aggregates error events forwarded by sibling AURiX extensions on the same device.</td>
+        <td><code>chrome.storage.local</code> (this extension only), bounded ring buffer</td>
+        <td>Ring-buffer; oldest entries dropped at the buffer cap. No cross-session persistence.</td>
+        <td>User-initiated download of the current ring buffer only</td>
+        <td>None</td>
+      </tr>
+      <tr>
+        <td>Receipt</td>
+        <td>On explicit user click only: a snapshot of the current tab&rsquo;s URL, declared origin, and lawful-state markers (Permissions API queries observed in the page).</td>
+        <td><code>chrome.storage.local</code> (this extension only) until exported</td>
+        <td>In-memory and local-storage only; no ambient or background capture</td>
+        <td>User-initiated download as a single Receipt artifact (one click, one Receipt)</td>
+        <td>None</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="muted">All five extensions declare <code>&lt;all_urls&gt;</code> as a host permission so that they can read structural page conditions on whatever site you are currently visiting. They do not transmit any of what they read.</p>
+
+  <h2>3. Data Retention and Deletion</h2>
+  <p>All data the AURiX extensions create is local to your browser profile and lives in each extension&rsquo;s own <code>chrome.storage.local</code> compartment. You can delete it at any time using any of the following:</p>
+  <ul>
+    <li><strong>Uninstall the extension.</strong> Removing the extension from Chrome (chrome://extensions &rarr; Remove) deletes its storage along with it.</li>
+    <li><strong>Clear the extension&rsquo;s storage.</strong> In <code>chrome://extensions</code>, open the extension details, then choose &ldquo;Site Settings&rdquo; or use the extension&rsquo;s own popup controls (where provided) to clear stored data.</li>
+    <li><strong>Clear browsing data.</strong> Chrome&rsquo;s &ldquo;Clear browsing data&rdquo; with &ldquo;Hosted app data&rdquo; / extension data selected will also remove it.</li>
+  </ul>
+  <p>Because there is no AURiX server, there is no &ldquo;please delete my data&rdquo; request to file with us. Deleting it from your browser <strong>is</strong> deleting it.</p>
+
+  <h2>4. Cross-Extension Messaging</h2>
+  <p>The five AURiX extensions are designed to coordinate as a sibling family. Scope, for example, can roll up signals from Gauge, Trace, Ledger, and Receipt into a single visual indicator. This coordination uses Chrome&rsquo;s standard extension-messaging mechanisms (<code>externally_connectable</code>, <code>chrome.runtime.sendMessage</code>) and <strong>stays entirely on your device</strong>. No message is ever sent over the network. No message is sent to any extension that is not an AURiX sibling installed on your own browser.</p>
+
+  <h2>5. What AURiX Does Not Do</h2>
+  <ul>
+    <li>It does not transmit any data to AURiX or to any third party.</li>
+    <li>It does not create an account, login, or device fingerprint.</li>
+    <li>It does not log keystrokes, mouse positions, microphone or camera input.</li>
+    <li>It does not record what you typed into forms.</li>
+    <li>It does not record what you read or how long you spent on a page.</li>
+    <li>It does not sell, share, or rent any data, because it does not collect any data it could sell.</li>
+    <li>It does not use any data for advertising or for training machine-learning models.</li>
+    <li>It does not contact any remote analytics, telemetry, or crash-reporting service.</li>
+  </ul>
+
+  <h2>6. The Privacy Flip</h2>
+  <p>AURiX watches what <em>the page</em> does, not what <em>the user</em> does. Because the page&rsquo;s own behavior is observable from inside the browser, AURiX can show you which third-party trackers, beacons, and cross-origin requests the pages you visit are loading &mdash; without needing to track you. The page cannot hide that it loaded a tracker. AURiX makes that visible. That is the entire point.</p>
+
+  <h2>7. Children</h2>
+  <p>The AURiX extensions are not directed at children under 13. They do not knowingly collect any personal information from anyone, of any age, because they do not collect any personal information at all.</p>
+
+  <h2>8. Changes to This Policy</h2>
+  <p>If this policy changes, the &ldquo;Last updated&rdquo; date at the top of this page will change. Because AURiX has no account system, there is no email list to notify; the canonical version is whatever is published at this URL.</p>
+
+  <h2>9. Contact</h2>
+  <p>Privacy inquiries: <strong><code>[INSERT_PRIVACY_EMAIL]</code></strong></p>
+  <p class="muted">Because AURiX holds no user data, the most common privacy request &mdash; &ldquo;delete my data&rdquo; &mdash; is something you can fulfill yourself by uninstalling the extension or clearing its storage (see Section 3). The contact above exists for questions about the policy itself, security research disclosures, and regulator inquiries.</p>
+
+  <footer>
+    AURiX Protocol &middot; LPI Posture (Local. Private. Identity-free.) &middot; Last updated 2026-05-19.
+    This page is a static document; it loads no scripts, no fonts, no images, and no third-party assets.
+  </footer>
+
+</body>
+</html>

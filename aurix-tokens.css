@@ -1,0 +1,125 @@
+/* ================================================================
+   AURiX Design Tokens — v0.1 (2026-04-21)
+   Single source of truth for palette, typography, geometry, state.
+   Grounded in:
+     - AURiX WP: Design Language (Calm Instrumentation)
+     - Corpus #244 aurix_style_design_guide
+     - Corpus #239 interface_design_philosophy
+     - onwardai_aurix_site.html warm-dark variant ("womby")
+   Aesthetic test: "revealed state, not borrowed prestige."
+   ================================================================ */
+
+:root {
+  /* --- SURFACE (warm-dark, womby default) --------------------- */
+  --aurix-bg:          #0a0604;   /* deep warm-black, page ground */
+  --aurix-panel:       #14100c;   /* main panel */
+  --aurix-panel-raised:#231a14;   /* raised panel / card */
+  --aurix-panel-hover: #2b1f17;   /* hover / active row */
+
+  /* --- TEXT (cream / silver utility) -------------------------- */
+  --aurix-text:        #f2e8d9;   /* primary, headlines, full contrast */
+  --aurix-text-muted:  #b8a994;   /* body, secondary */
+  --aurix-text-dim:    #6b5d52;   /* metadata, captions, dividers */
+
+  /* --- BRAND (AURiX gold — family signature) ------------------ */
+  --aurix-gold:        #c8a96b;   /* primary accent, wordmark */
+  --aurix-gold-dim:    #8e7446;   /* 1px dividers, subtle borders */
+  --aurix-gold-faint:  rgba(200,169,107,.15);  /* edge washes */
+
+  /* --- INSTRUMENT IDENTITY (edge-dissolve accents) ------------ */
+  /* Scope has no identity color — it is the compositor; state
+     colors appear through it directly. */
+  --aurix-gauge:       #5DA9E9;   /* cool blue — present, immediate */
+  --aurix-trace:       #D68A3C;   /* amber — wayfinding */
+  --aurix-ledger:      #8A9B8E;   /* slate-sage — documentation */
+  --aurix-receipt:     #c8967b;   /* rose gold — examiner, witness */
+  --aurix-reclaim:     #c8a96b;   /* full gold — flagship, preservation */
+  --aurix-audit:       #c8a96b;   /* desktop app; same gold family */
+  --aurix-answer:      #b8a994;   /* corpus interrogator; cream-neutral */
+
+  /* --- STATE COLORS (universal, never dissolve, shape-paired) - */
+  --aurix-stable:      #22c55e;   /* filled circle */
+  --aurix-uncertain:   #eab308;   /* hollow circle */
+  --aurix-fracture:    #ef4444;   /* upward triangle */
+
+  /* --- TYPOGRAPHY (system only, no prestige fonts) ------------ */
+  --aurix-font-sans:   system-ui, -apple-system, "Segoe UI", Roboto,
+                       Helvetica, Arial, "Liberation Sans", sans-serif;
+  --aurix-font-mono:   ui-monospace, "SF Mono", Menlo, Monaco, Consolas,
+                       "Liberation Mono", monospace;
+
+  /* --- GEOMETRY (4px grid, sharp or minimal radius) ----------- */
+  --aurix-space-1: 4px;
+  --aurix-space-2: 8px;
+  --aurix-space-3: 12px;
+  --aurix-space-4: 16px;
+  --aurix-space-6: 24px;
+  --aurix-space-8: 32px;
+
+  --aurix-radius-none: 0;
+  --aurix-radius-xs:   2px;
+  --aurix-radius-sm:   4px;
+  --aurix-radius-md:   8px;  /* panels, popups */
+  --aurix-radius-lg:   12px; /* card edges only */
+
+  --aurix-border-hair: 1px solid var(--aurix-gold-dim);
+  --aurix-border-soft: 1px solid rgba(142,116,70,.35);
+
+  /* --- MOTION (slow, intentional, never panic) ---------------- */
+  --aurix-ease:        cubic-bezier(.4, 0, .2, 1);
+  --aurix-dur-quick:   120ms;
+  --aurix-dur-calm:    300ms;
+  --aurix-dur-slow:    500ms;
+
+  /* --- Z-ORDER (extension injection only) --------------------- */
+  --aurix-z-overlay:   2147483646;
+  --aurix-z-top:       2147483647;
+}
+
+/* ================================================================
+   LIGHT-MODE MIRROR
+   User preference, not brand identity (per DL WP §"Mode Selection").
+   Activated by <html data-aurix-mode="light"> or prefers-color-scheme.
+   ================================================================ */
+@media (prefers-color-scheme: light) {
+  :root:not([data-aurix-mode="dark"]) {
+    --aurix-bg:          #faf7f2;
+    --aurix-panel:       #f2ede4;
+    --aurix-panel-raised:#e8e0d2;
+    --aurix-panel-hover: #ddd3c1;
+    --aurix-text:        #1a140e;
+    --aurix-text-muted:  #4a3f33;
+    --aurix-text-dim:    #7a6d5e;
+  }
+}
+
+:root[data-aurix-mode="light"] {
+  --aurix-bg:          #faf7f2;
+  --aurix-panel:       #f2ede4;
+  --aurix-panel-raised:#e8e0d2;
+  --aurix-panel-hover: #ddd3c1;
+  --aurix-text:        #1a140e;
+  --aurix-text-muted:  #4a3f33;
+  --aurix-text-dim:    #7a6d5e;
+}
+
+/* ================================================================
+   HIGH-CONTRAST VARIANT
+   Shape-plus-color for accessibility. Per DL WP: state shapes
+   (filled circle / hollow circle / triangle) already do color-
+   independent state communication. HC mode boosts chroma +
+   reduces glass.
+   ================================================================ */
+:root[data-aurix-mode="high-contrast"] {
+  --aurix-bg:          #000;
+  --aurix-panel:       #000;
+  --aurix-panel-raised:#0a0a0a;
+  --aurix-text:        #fff;
+  --aurix-text-muted:  #e0e0e0;
+  --aurix-text-dim:    #b0b0b0;
+  --aurix-stable:      #00ff66;
+  --aurix-uncertain:   #ffd000;
+  --aurix-fracture:    #ff3030;
+  --aurix-gold:        #ffd060;
+  --aurix-gold-dim:    #c89940;
+}

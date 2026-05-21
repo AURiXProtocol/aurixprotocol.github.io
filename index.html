@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en" data-aurix-mode="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AURiX — Show what is controlling the page right now.</title>
+<meta name="description" content="AURiX is a protocol for making the structural conditions of digital interaction visible — without interpretation, scoring, or identity. Local. Private. Identity-free.">
+<link rel="stylesheet" href="aurix-tokens.css">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--aurix-bg); color: var(--aurix-text); font-family: var(--aurix-font-sans); line-height: 1.55; }
+  body { max-width: 780px; margin: 0 auto; padding: var(--aurix-space-8) var(--aurix-space-6); }
+  h1, h2, h3, h4 { font-weight: 600; letter-spacing: -0.01em; line-height: 1.25; }
+  h1 { font-size: 2.2rem; margin-bottom: var(--aurix-space-4); }
+  h2 { font-size: 1.4rem; margin: var(--aurix-space-8) 0 var(--aurix-space-3); color: var(--aurix-text); letter-spacing: 0.02em; }
+  h3 { font-size: 1.05rem; margin: var(--aurix-space-4) 0 var(--aurix-space-2); color: var(--aurix-gold); letter-spacing: 0.05em; text-transform: uppercase; }
+  p { margin-bottom: var(--aurix-space-3); color: var(--aurix-text-muted); }
+  strong { color: var(--aurix-text); font-weight: 600; }
+  em { color: var(--aurix-gold); font-style: normal; }
+  code { font-family: var(--aurix-font-mono); font-size: 0.92em; color: var(--aurix-text); background: var(--aurix-panel); padding: 2px 6px; border-radius: var(--aurix-radius-xs); }
+  a { color: var(--aurix-gold); text-decoration: none; border-bottom: 1px dotted var(--aurix-gold-dim); }
+  a:hover { border-bottom-style: solid; }
+  .dim { color: var(--aurix-text-dim); font-size: 0.9em; }
+  .divider { height: 1px; background: var(--aurix-gold-dim); opacity: 0.4; margin: var(--aurix-space-8) 0; }
+
+  .wordmark { font-weight: 700; letter-spacing: 0.02em; }
+  .wordmark .a1, .wordmark .x { color: var(--aurix-text); }
+  .wordmark .uri { color: var(--aurix-gold); }
+
+  header.hero { padding-top: var(--aurix-space-6); }
+  header.hero .atom { font-size: 1.3rem; color: var(--aurix-text); margin: var(--aurix-space-4) 0; line-height: 1.4; }
+  header.hero .sub { color: var(--aurix-text-muted); font-size: 1rem; }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--aurix-space-3); margin-top: var(--aurix-space-3); }
+  .card { padding: var(--aurix-space-4); background: var(--aurix-panel); border-left: 2px solid var(--aurix-gold-dim); border-radius: var(--aurix-radius-sm); }
+  .card .name { font-weight: 600; color: var(--aurix-text); font-size: 0.98rem; }
+  .card .desc { color: var(--aurix-text-dim); font-size: 0.85rem; margin-top: 3px; }
+  .card[data-instr="gauge"]   { border-left-color: var(--aurix-gauge); }
+  .card[data-instr="trace"]   { border-left-color: var(--aurix-trace); }
+  .card[data-instr="ledger"]  { border-left-color: var(--aurix-ledger); }
+  .card[data-instr="receipt"] { border-left-color: var(--aurix-receipt); }
+  .card[data-instr="reclaim"] { border-left-color: var(--aurix-reclaim); }
+  .card[data-instr="audit"]   { border-left-color: var(--aurix-audit); }
+  .card[data-instr="answer"]  { border-left-color: var(--aurix-answer); }
+
+  ol.invariants { list-style: none; counter-reset: inv; padding-left: 0; }
+  ol.invariants li { counter-increment: inv; padding: var(--aurix-space-2) 0; color: var(--aurix-text-muted); font-size: 0.95rem; border-bottom: 1px solid rgba(142,116,70,.15); }
+  ol.invariants li::before { content: counter(inv) ". "; color: var(--aurix-gold); font-family: var(--aurix-font-mono); margin-right: var(--aurix-space-2); }
+  ol.invariants li:last-child { border-bottom: none; }
+
+  .states { display: flex; gap: var(--aurix-space-6); margin: var(--aurix-space-4) 0; flex-wrap: wrap; }
+  .state { display: flex; align-items: center; gap: var(--aurix-space-2); }
+  .shape { width: 18px; height: 18px; display: inline-block; }
+  .shape.stable    { background: var(--aurix-stable); border-radius: 50%; }
+  .shape.uncertain { border: 2px solid var(--aurix-uncertain); border-radius: 50%; background: transparent; }
+  .shape.fracture  { width: 0; height: 0; background: transparent; border-left: 10px solid transparent; border-right: 10px solid transparent; border-bottom: 16px solid var(--aurix-fracture); }
+  .state-label { color: var(--aurix-text); font-weight: 600; font-size: 0.95rem; letter-spacing: 0.04em; }
+
+  .attest { background: var(--aurix-panel); border: var(--aurix-border-soft); border-radius: var(--aurix-radius-md); padding: var(--aurix-space-4); margin-top: var(--aurix-space-4); }
+  .attest h3 { margin-top: 0; color: var(--aurix-gold); }
+  .attest .receipt { font-family: var(--aurix-font-mono); font-size: 0.82rem; color: var(--aurix-text-muted); white-space: pre-wrap; margin-top: var(--aurix-space-3); padding: var(--aurix-space-3); background: var(--aurix-bg); border-radius: var(--aurix-radius-xs); max-height: 360px; overflow: auto; }
+  .attest .state-line { display: flex; align-items: center; gap: var(--aurix-space-2); font-size: 1.05rem; color: var(--aurix-text); }
+
+  .demo { background: var(--aurix-panel-raised); border: 1px dashed var(--aurix-gold-dim); border-radius: var(--aurix-radius-md); padding: var(--aurix-space-6); text-align: center; margin: var(--aurix-space-4) 0; cursor: context-menu; user-select: none; }
+  .demo .demo-hint { color: var(--aurix-gold); font-size: 0.85rem; letter-spacing: 0.05em; }
+  .demo .demo-body { color: var(--aurix-text-muted); margin-top: var(--aurix-space-2); font-size: 0.95rem; }
+  .demo .demo-counter { color: var(--aurix-text-dim); font-family: var(--aurix-font-mono); font-size: 0.8rem; margin-top: var(--aurix-space-2); }
+
+  .aurix-scope-pill {
+    position: fixed;
+    left: var(--aurix-space-4);
+    bottom: var(--aurix-space-4);
+    background: var(--aurix-panel-raised);
+    color: var(--aurix-text);
+    padding: var(--aurix-space-3) var(--aurix-space-4);
+    border-radius: var(--aurix-radius-md);
+    border: var(--aurix-border-soft);
+    font-family: var(--aurix-font-mono);
+    font-size: 0.85rem;
+    display: flex;
+    gap: var(--aurix-space-2);
+    align-items: flex-start;
+    max-width: 360px;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity var(--aurix-dur-calm) var(--aurix-ease), transform var(--aurix-dur-calm) var(--aurix-ease);
+    z-index: var(--aurix-z-overlay);
+    pointer-events: none;
+  }
+  .aurix-scope-pill.show { opacity: 1; transform: translateY(0); }
+  .aurix-scope-pill .pill-shape { flex-shrink: 0; margin-top: 4px; }
+  .aurix-scope-pill .pill-body { flex-grow: 1; }
+  .aurix-scope-pill .pill-head { font-weight: 600; letter-spacing: 0.04em; font-size: 0.9rem; }
+  .aurix-scope-pill .pill-facts { color: var(--aurix-text-muted); font-size: 0.78rem; margin-top: 2px; }
+
+  .equation { text-align: center; font-family: var(--aurix-font-mono); font-size: 1.3rem; color: var(--aurix-gold); margin: var(--aurix-space-3) 0; letter-spacing: 0.05em; }
+  .eq-legend { display: grid; grid-template-columns: 24px 1fr; gap: var(--aurix-space-2) var(--aurix-space-3); font-size: 0.9rem; color: var(--aurix-text-muted); margin-top: var(--aurix-space-4); max-width: 520px; margin-left: auto; margin-right: auto; }
+  .eq-legend .sym { font-family: var(--aurix-font-mono); color: var(--aurix-gold); text-align: right; }
+
+  .compassion { background: var(--aurix-panel); border-left: 3px solid var(--aurix-gold); padding: var(--aurix-space-4) var(--aurix-space-6); margin: var(--aurix-space-6) 0; border-radius: var(--aurix-radius-sm); }
+  .compassion h3 { color: var(--aurix-gold); margin-top: 0; }
+  .compassion em { color: var(--aurix-text); }
+
+  .triad { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--aurix-space-4); margin: var(--aurix-space-4) 0; }
+  .triad-item { padding: var(--aurix-space-3); }
+  .triad-item .tname { color: var(--aurix-gold); font-size: 0.85rem; letter-spacing: 0.06em; text-transform: uppercase; }
+  .triad-item .tdesc { color: var(--aurix-text-muted); font-size: 0.92rem; margin-top: 4px; }
+  .fwf { text-align: center; color: var(--aurix-text-dim); font-size: 0.85rem; letter-spacing: 0.08em; margin-top: var(--aurix-space-2); }
+  .fwf em { color: var(--aurix-gold); }
+
+  footer { margin-top: var(--aurix-space-8); padding-top: var(--aurix-space-6); border-top: 1px solid rgba(142,116,70,.2); color: var(--aurix-text-dim); font-size: 0.85rem; }
+  footer a { color: var(--aurix-gold-dim); }
+
+  @media (max-width: 600px) {
+    body { padding: var(--aurix-space-4) var(--aurix-space-3); }
+    h1 { font-size: 1.6rem; }
+    header.hero .atom { font-size: 1.1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <h1 class="wordmark"><span class="a1">A</span><span class="uri">URi</span><span class="x">X</span></h1>
+  <p class="atom">Show what is controlling the page right now.</p>
+  <p class="sub">A protocol for making the structural conditions of digital interaction visible — without interpretation, scoring, or identity.</p>
+</header>
+
+<div class="divider"></div>
+
+<section>
+  <h2>The page you are reading, scanned by the tool it describes</h2>
+  <p>AURiX is observation of structural mechanism. When you opened this page, the protocol ran on the page itself. Below is the <strong>self-attestation</strong> — a receipt of what this page is doing, in the same format AURiX emits for any page.</p>
+
+  <div class="attest" id="self-attest">
+    <h3>Self-attestation · live</h3>
+    <div class="state-line">
+      <span class="shape stable" id="attest-shape"></span>
+      <span class="state-label" id="attest-state-name">Loading…</span>
+    </div>
+    <pre class="receipt" id="attest-receipt">Running…</pre>
+    <p class="dim" style="margin-top: var(--aurix-space-3);">Same receipt format emitted by the Receipt browser instrument and AUDiT desktop app. Reproducible: reload this page with the same inputs, same output under the 8 invariants.</p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section>
+  <div class="compassion">
+    <h3>Why this is not surveillance</h3>
+    <p>The same mechanisms that expose dark patterns could be used to shame, score, or punish. The property that prevents that is the <em>compassion constraint</em>: AURiX surfaces without shaming; the affordance is <em>return</em>, not punishment. Every feature is tested against it.</p>
+    <p>Silence as design. Shape, not score. The artifact is the mechanism, not the verdict. The invariants protect honesty. The compassion constraint protects agency. Both must hold.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Eight invariants</h2>
+  <p>Every signal AURiX surfaces satisfies all eight. If it fails any, it is not AURiX.</p>
+  <ol class="invariants">
+    <li>Mechanism only — no interpretation</li>
+    <li>No interpretation imposed</li>
+    <li>Separation of layers</li>
+    <li>Observable or declared</li>
+    <li>Explicit origin</li>
+    <li>No silent transformation</li>
+    <li>Reproducibility boundary</li>
+    <li>No undeclared meaning</li>
+  </ol>
+  <p class="dim" style="margin-top: var(--aurix-space-3);">If a signal requires judgment, it is not an AURiX signal.</p>
+</section>
+
+<div class="divider"></div>
+
+<section>
+  <h2>Three states, one rule</h2>
+  <p>Every observation composes to one of three states. The rule is mechanical, not editorial: worst state wins.</p>
+  <div class="states">
+    <div class="state"><span class="shape stable"></span><span class="state-label">Stable</span></div>
+    <div class="state"><span class="shape uncertain"></span><span class="state-label">Uncertain</span></div>
+    <div class="state"><span class="shape fracture"></span><span class="state-label">Fracture</span></div>
+  </div>
+  <p class="dim">Filled circle. Hollow circle. Upward triangle. Shape plus color for accessibility. Static. No animation.</p>
+</section>
+
+<div class="divider"></div>
+
+<section>
+  <h2>Ignite at right-click — try it</h2>
+  <p>The full browser suite lives in a single right-click gesture. Right-click the box below and AURiX reports the mechanism facts about it. Same posture, smaller surface — this is a demo, not the full extension.</p>
+
+  <div class="demo" id="demo-zone">
+    <div class="demo-hint">RIGHT-CLICK THIS BOX</div>
+    <div class="demo-body">A surface with a stable https origin, no redirect chain, no tracker beacons, no overlay interception.</div>
+    <div class="demo-counter" id="demo-counter">clicks registered: 0</div>
+  </div>
+
+  <p class="dim">By the fifth right-click you have learned what a redirect chain is, what tracking params look like, and what structural transparency reads as — without a tutorial, without an onboarding, without being lectured. Sleeper teach.</p>
+</section>
+
+<div class="divider"></div>
+
+<section>
+  <h2>The suite — five browser, six desktop</h2>
+
+  <h3>Browser · ignite at right-click</h3>
+  <div class="cards">
+    <div class="card" data-instr="gauge"><div class="name">Gauge</div><div class="desc">What's happening now</div></div>
+    <div class="card" data-instr="scope"><div class="name">Scope</div><div class="desc">The composited signal</div></div>
+    <div class="card" data-instr="trace"><div class="name">Trace</div><div class="desc">Where you've been</div></div>
+    <div class="card" data-instr="ledger"><div class="name">Ledger</div><div class="desc">What changed over time</div></div>
+    <div class="card" data-instr="receipt"><div class="name">Receipt</div><div class="desc">What you agreed to</div></div>
+  </div>
+
+  <h3>Desktop · heavyweight, on-demand</h3>
+  <div class="cards">
+    <div class="card" data-instr="audit"><div class="name">AUDiT</div><div class="desc">Structural attestation</div></div>
+    <div class="card" data-instr="reclaim"><div class="name">reClaim</div><div class="desc">Recovery of the deep past</div></div>
+    <div class="card" data-instr="answer"><div class="name">Answer</div><div class="desc">Interrogation of everything</div></div>
+    <div class="card"><div class="name">Anonymize</div><div class="desc">Sector-grade safe release</div></div>
+    <div class="card"><div class="name">SELFiX</div><div class="desc">The personal counterpart</div></div>
+    <div class="card"><div class="name">Record</div><div class="desc">Universal data egress</div></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section>
+  <h2>The engine triad · FWF</h2>
+  <div class="triad">
+    <div class="triad-item">
+      <div class="tname">Find Fracture First</div>
+      <div class="tdesc">Detection. The browser instruments locate structural breaks without judgment.</div>
+    </div>
+    <div class="triad-item">
+      <div class="tname">Helper Who Helps</div>
+      <div class="tdesc">Equipment. Desktop apps let the user act on what was found — entooled, not empowered.</div>
+    </div>
+    <div class="triad-item">
+      <div class="tname">Fair Finds Fair</div>
+      <div class="tdesc">Resolution. When fractures are visible and tools are accessible, the right path becomes obvious.</div>
+    </div>
+  </div>
+  <p class="fwf">FWF. Pronounced <em>fwhooof</em> — the sound of a soft release.</p>
+</section>
+
+<div class="divider"></div>
+
+<section>
+  <h2 style="letter-spacing: 0.1em;">Local. Private. Identity-free.</h2>
+  <p>Every observation is ephemeral by default. Export is a conscious act. Nothing phones home.</p>
+  <p><em>If your data leaks, it wasn't from us — because we never had it. But we can show you who does.</em></p>
+</section>
+
+<div class="divider"></div>
+
+<section>
+  <h2>Kindness is a ratio</h2>
+  <div class="equation">L = E − D</div>
+  <div class="equation">K = −D / E</div>
+  <div class="eq-legend">
+    <span class="sym">E</span><span>Efficiency. Declared functional paths available.</span>
+    <span class="sym">D</span><span>Distortion. Undeclared mechanisms altering, intercepting, or redirecting.</span>
+    <span class="sym">L</span><span>Logic. What remains after distortion.</span>
+    <span class="sym">K</span><span>Kindness. The ratio, not the sentiment.</span>
+  </div>
+  <p class="dim" style="text-align: center; margin-top: var(--aurix-space-4);">Logic is efficiency minus distortion. Kindness is a structural property, not a sentiment. When distortion is visible, it becomes reducible.</p>
+</section>
+
+<footer>
+  <p>Aaron Lott · OnwardAI · <a href="mailto:willtravel20@gmail.com">willtravel20@gmail.com</a></p>
+  <p style="margin-top: 6px;">AURiX is a local, private, identity-free structural observation protocol. MPL 2.0 on extensions + spec, CC-BY-SA on papers, permanent zero-cost on desktop apps when endowment sustains operations.</p>
+  <p style="margin-top: 6px;">Patent portfolio: USPTO Customer # 205781. 7 active provisional applications, including the unified architectural master umbrella (priority 2026-05-17). 4 LLCs. One church.</p>
+</footer>
+
+<script>
+(function() {
+  "use strict";
+  async function buildSelfAttestation() {
+    const now = new Date().toISOString();
+    const url = new URL(window.location.href);
+    const facts = [];
+    let state = "stable";
+
+    if (url.protocol === "https:") { facts.push("https"); }
+    else if (url.protocol === "http:") { facts.push("not_https"); state = "uncertain"; }
+
+    const bodyOverflow = getComputedStyle(document.body).overflow;
+    const htmlOverflow = getComputedStyle(document.documentElement).overflow;
+    if (bodyOverflow === "hidden" || htmlOverflow === "hidden") { facts.push("scroll_locked"); state = "uncertain"; }
+    else { facts.push("scroll_free"); }
+
+    let biggestOverlay = 0;
+    document.querySelectorAll("*").forEach(el => {
+      const style = getComputedStyle(el);
+      if (style.position === "fixed" || style.position === "sticky") {
+        const r = el.getBoundingClientRect();
+        const coverage = (r.width * r.height) / (window.innerWidth * window.innerHeight);
+        if (coverage > biggestOverlay) biggestOverlay = coverage;
+      }
+    });
+    if (biggestOverlay > 0.5) { facts.push(`overlay:${Math.round(biggestOverlay * 100)}%_viewport`); state = "uncertain"; }
+    else { facts.push("no_major_overlay"); }
+
+    const pageOrigin = url.origin;
+    const scripts = Array.from(document.querySelectorAll("script[src]"));
+    const thirdPartyHosts = new Set();
+    scripts.forEach(s => {
+      try {
+        const h = new URL(s.src, pageOrigin).origin;
+        if (h !== pageOrigin) thirdPartyHosts.add(h);
+      } catch {}
+    });
+    if (thirdPartyHosts.size > 0) { facts.push(`third_party_scripts:${thirdPartyHosts.size}`); }
+    else { facts.push("no_third_party_scripts"); }
+
+    const trackingParams = ["utm_source", "utm_medium", "utm_campaign", "gclid", "fbclid", "msclkid"];
+    const foundTracking = trackingParams.filter(p => url.searchParams.has(p));
+    if (foundTracking.length > 0) { facts.push(`tracking:${foundTracking.join(",")}`); state = "uncertain"; }
+
+    if (document.cookie.length > 0) { facts.push(`cookies_set:${document.cookie.split(";").length}`); }
+    else { facts.push("no_cookies"); }
+
+    facts.push(`dom_nodes:${document.querySelectorAll("*").length}`);
+
+    const receipt = {
+      impetus: "page_load (user navigation or reload)",
+      encounter: { url: url.href, title: document.title, timestamp: now },
+      observed_state: { state: state, facts: facts },
+      extent: {
+        instruments_simulated: ["Gauge T0", "Trace T0", "Scope composition"],
+        signal_families_surveyed: [1, 2, 3, 4, 6, 9, 11, 12, 14],
+        note: "Website self-attest — a ~30-signal subset. Full extension suite surveys 600 signals across 26 families."
+      },
+      meta: {
+        emitted_by: "AURiX website self-attestation v0.1",
+        reproducible: true, local_only: true, identity_free: true
+      }
+    };
+
+    const receiptStr = JSON.stringify(receipt, null, 2);
+    let hash = "";
+    try {
+      const msgUint8 = new TextEncoder().encode(receiptStr);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", msgUint8);
+      hash = Array.from(new Uint8Array(hashBuffer))
+        .map(b => b.toString(16).padStart(2, "0")).join("").slice(0, 16);
+    } catch {}
+
+    return { state, facts, receipt, receiptStr, hash };
+  }
+
+  async function renderSelfAttest() {
+    const { state, receiptStr, hash } = await buildSelfAttestation();
+    const shape = document.getElementById("attest-shape");
+    const nameEl = document.getElementById("attest-state-name");
+    const receiptEl = document.getElementById("attest-receipt");
+    shape.className = "shape " + state;
+    nameEl.textContent = state.charAt(0).toUpperCase() + state.slice(1);
+    receiptEl.textContent = receiptStr + "\n\nsha256: " + hash;
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", renderSelfAttest);
+  } else {
+    renderSelfAttest();
+  }
+})();
+</script>
+
+<script>
+(function() {
+  "use strict";
+  const demoZone = document.getElementById("demo-zone");
+  const counterEl = document.getElementById("demo-counter");
+  if (!demoZone) return;
+
+  let clickCount = 0;
+  let pillEl = null;
+  let pillTimer = null;
+
+  function ensurePill() {
+    if (pillEl) return pillEl;
+    pillEl = document.createElement("div");
+    pillEl.className = "aurix-scope-pill";
+    pillEl.innerHTML = `
+      <span class="pill-shape"></span>
+      <div class="pill-body">
+        <div class="pill-head"></div>
+        <div class="pill-facts"></div>
+      </div>`;
+    document.body.appendChild(pillEl);
+    return pillEl;
+  }
+
+  function shapeHTML(state) {
+    if (state === "stable") return '<span class="shape stable" style="width:14px;height:14px;"></span>';
+    if (state === "uncertain") return '<span class="shape uncertain" style="width:14px;height:14px;"></span>';
+    return '<span class="shape fracture" style="border-left-width:7px;border-right-width:7px;border-bottom-width:12px;"></span>';
+  }
+
+  function showPill(state, head, facts) {
+    const pill = ensurePill();
+    pill.querySelector(".pill-shape").innerHTML = shapeHTML(state);
+    pill.querySelector(".pill-head").textContent = head;
+    pill.querySelector(".pill-head").style.color =
+      state === "stable" ? "var(--aurix-stable)" :
+      state === "uncertain" ? "var(--aurix-uncertain)" : "var(--aurix-fracture)";
+    pill.querySelector(".pill-facts").textContent = facts.join(" · ");
+    pill.classList.add("show");
+    if (pillTimer) clearTimeout(pillTimer);
+    pillTimer = setTimeout(() => pill.classList.remove("show"), 4000);
+  }
+
+  demoZone.addEventListener("contextmenu", function(e) {
+    e.preventDefault();
+    clickCount++;
+    counterEl.textContent = "clicks registered: " + clickCount;
+    const lessons = [
+      { state: "stable", head: "Scope this page", facts: ["https", "no_redirects", "no_third_party_scripts", "no_cookies"] },
+      { state: "uncertain", head: "Scope this link", facts: ["https", "redirect_hops:3", "cross-origin", "tracking:utm_source,gclid"] },
+      { state: "uncertain", head: "Gauge this page", facts: ["scroll_locked", "overlay:78%_viewport", "focus_trap"] },
+      { state: "fracture", head: "Scope this page", facts: ["not_https", "host_swap example.com → sketchy.xyz", "invariant_5_violated"] },
+      { state: "stable", head: "Receipt this moment", facts: ["1_consent_event", "permissions:none_granted", "session_scoped"] },
+      { state: "uncertain", head: "Trace this link", facts: ["redirect_hops:2", "tracking:fbclid", "cross-origin"] }
+    ];
+    const lesson = lessons[(clickCount - 1) % lessons.length];
+    showPill(lesson.state, lesson.head, lesson.facts);
+  });
+})();
+</script>
+
+</body>
+</html>
